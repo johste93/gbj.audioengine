@@ -1,0 +1,20 @@
+{
+  "name": "gbj.audioengine",
+  "displayName": "Audio Engine",
+  "author": {
+    "name": "Johannes Stensen",
+    "url": "https://github.com/johste93"
+  },
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "changelogUrl": "",
+  "documentationUrl": "https://github.com/johste93/gbj.audioengine",
+  "description": "A simple audio engine intended to make audio engineers less reliant on a programmer to create, add and adjust music and sound effects. A.K.A Poor man's FMOD / Wwise.",
+  "keywords": [
+    "Audio"
+  ],
+  "license": "MIT License",
+  "dependencies": {
+    "com.unity.addressables": "1.18.19"
+  }
+}

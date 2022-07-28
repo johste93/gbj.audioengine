@@ -1,0 +1,21 @@
+{
+  "name": "gbj.audioengine.dotween",
+  "displayName": "Audio Engine DOTween Extensions",
+  "author": {
+    "name": "Johannes Stensen",
+    "url": "https://github.com/johste93"
+  },
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "changelogUrl": "",
+  "documentationUrl": "https://github.com/johste93/gbj.audioengine",
+  "description": "Optional DOTween extensions for audio engine.",
+  "keywords": [
+    "Audio",
+    "DOTween"
+  ],
+  "license": "MIT License",
+  "dependencies": {
+    "com.unity.addressables": "1.18.19"
+  }
+}
