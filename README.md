@@ -11,11 +11,11 @@ A simple audio engine intended to make audio engineers less reliant on a program
 
 ## Install via git URL
 
-Requires a version of unity that supports path query parameter for git packages (Unity >= 2019.3.4f1, Unity >= 2020.1a21). You can add https://github.com/johste93/gbj.entitydb.git?path=Assets/GBJ.AudioEngine to Package Manager
+Requires a version of unity that supports path query parameter for git packages (Unity >= 2019.3.4f1, Unity >= 2020.1a21). You can add https://github.com/johste93/gbj.audioengine.git?path=Assets/GBJ.AudioEngine to Package Manager
 
-or add "gbj.audioengine": "https://github.com/johste93/gbj.audioengine.git?path=Assets/gbj.audioengine" to Packages/manifest.json.
+or add "gbj.audioengine": "https://github.com/johste93/gbj.audioengine.git?path=Assets/GBJ.AudioEngine" to Packages/manifest.json.
 
-If you want to set a target version, gbj.entitydb uses the *.*.* release tag so you can specify a version like #0.0.2. For example https://github.com/johste93/gbj.audioengine.git?path=Assets/GBJ.AudioEngine#0.0.2.
+If you want to set a target version, gbj.audioengine uses the *.*.* release tag so you can specify a version like #0.0.2. For example https://github.com/johste93/gbj.audioengine.git?path=Assets/GBJ.AudioEngine#0.0.2.
 
 ## Getting Started:
 
