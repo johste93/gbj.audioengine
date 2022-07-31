@@ -4,6 +4,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Audio;
 using GBJ.AudioEngine.Settings;
 using GBJ.AudioEngine.Effects;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace GBJ.AudioEngine
 {
