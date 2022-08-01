@@ -592,7 +592,7 @@ namespace GBJ.AudioEngine
 
         public void Destroy()
         {
-            if(assetReference.RuntimeKeyIsValid())
+            if(assetReference.IsValid() && assetReference.RuntimeKeyIsValid())
                 assetReference.ReleaseAsset();
             
 #if UNITY_EDITOR
