@@ -3,8 +3,14 @@
 
 A simple audio engine intended to make audio engineers less reliant on a programmer to create, add and adjust music and sound effects. A.K.A Poor mans FMOD / Wwise.
 
-## Features:
+To avoid hard coding audio settings: Music and sound effects settings are saved as configurable scriptable objects.
 
+## Features:
+* Preview audio effects in editor.
+* Tweak sound effects at runtime.
+* All build in Unity filters supported.
+* Configurable play order: Play in order, Random but not twice or Random with no repeats.
+* Automatic memory management built on top of Addressables. Sounds are not loaded into memory before their needed and released once their no longer needed.
 ## Dependencies:
     Unity 2021
     Unity.Addressables
@@ -19,13 +25,40 @@ If you want to set a target version, gbj.audioengine uses the *.*.* release tag 
 
 ## Getting Started:
 
+1. Create a new Audio Event inside a "Resource" directory: Create -> AudioEngine -> New Audio Event
+<img src="DOC/fig1.png">
+
+
+2. Give your audio event a unique name.
+
+
+3. Assign Audioclip(s) to your Audio Event. Configure your Audio Event settings as desired.
+<img src="DOC/fig2.png">
+
+
+4. To play your audio event. Simply call:
+```
+void Start()
+{
+    Audio.Play("Demo Event");
+}
+```
+
 ## FAQ:
 
 ```
-Q: I hear no sound when clicking the Play button on Audio Event.
-A: Make sure the Mute Audio Toggle Button on The Game View is not enabled.
+Q:  Error: AudioEvent {eventName} not found!
+A:  Audio Events are loaded from Resources. 
+    Make sure your audio event is located in a directory called "Resources" https://docs.unity3d.com/ScriptReference/Resources.html
+```
+
+```
+Q:  I hear no sound when clicking the Play button on Audio Event.
+A:  Make sure the Mute Audio Toggle Button on The Game View is not enabled.
 ```
 
 ### Improvement areas:
+
+I like to find a way to use constants rather than strings to play audio events. 
 
 PR's are welcome.
