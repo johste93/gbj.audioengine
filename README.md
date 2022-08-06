@@ -141,7 +141,8 @@ Q:  I hear no sound when clicking the Play button on Audio Event.
 A:  Make sure the Mute Audio Toggle Button on The Game View is not enabled.
 ```
 
-### Improvement areas:
+
+## Improvement areas:
 
 * Improve documentation
 * Add more samples
