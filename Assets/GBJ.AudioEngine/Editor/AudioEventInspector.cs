@@ -101,7 +101,10 @@ namespace GBJ.AudioEngine.Editor
 
             audioEvent.PlayOrder = (PlayOrder)EditorGUILayout.EnumPopup("Play Order", audioEvent.PlayOrder);
             audioEvent.SurviveSceneChanges = EditorGUILayout.Toggle("Survive Scene Changes", audioEvent.SurviveSceneChanges);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Tags"));
 
+            EditorGUILayout.Space();
+            
             AudioSourceSettingsInspector.Draw(audioEvent.AudioSourceSettings);
             AudioChorusFilterSettingsInspector.Draw(audioEvent.AudioChorusFilterSettings);
             AudioDistortionFilterSettingsInspector.Draw(audioEvent.AudioDistortionFilterSettings);

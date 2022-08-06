@@ -1,16 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Audio;
 using GBJ.AudioEngine.Settings;
 using GBJ.AudioEngine.Effects;
-using UnityEngine.ResourceManagement.AsyncOperations;
+using Random = UnityEngine.Random;
 
 namespace GBJ.AudioEngine
 {
     public class AudioPlayer : MonoBehaviour
     {
         public AudioSource Source;
+        public List<string> Tags = new List<string>();
 
         [HideInInspector] public AudioChorusFilter ChorusFilter;
         [HideInInspector] public AudioDistortionFilter DistortionFilter;
@@ -22,6 +25,10 @@ namespace GBJ.AudioEngine
         private Coroutine playRoutine;
         private AssetReference assetReference;
         private AudioDelaySettings audioDelaySettings;
+
+        private void Awake() => Audio.RegisterAudioPlayer(this);
+
+        private void OnDestroy() => Audio.UnregisterAudioPlayer(this);
 
         public void Play()
         {
@@ -116,6 +123,8 @@ namespace GBJ.AudioEngine
 
             if(audioEvent.SurviveSceneChanges)
                 SurviveSceneChanges();
+
+            SetTags(audioEvent.Tags);
 
             SetDelay(
                 audioEvent.AudioSourceSettings.Delay,
@@ -587,6 +596,24 @@ namespace GBJ.AudioEngine
         public AudioPlayer SurviveSceneChanges()
         {
             DontDestroyOnLoad(gameObject);
+            return this;
+        }
+
+        public AudioPlayer SetTags(List<string> tags)
+        {
+            this.Tags = new List<string>(tags);
+            return this;
+        }
+
+        public AudioPlayer AddTag(string tag)
+        {
+            Tags.Add(tag);
+            return this;
+        }
+
+        public AudioPlayer RemoveTag(string tag)
+        {
+            this.Tags.Remove(tag);
             return this;
         }
 

@@ -11,12 +11,10 @@ namespace GBJ.AudioEngine
         public string Name;
         
         public AssetReferenceAudioClip[] AssetReferances;
-
-        //Other features
+        
         public PlayOrder PlayOrder;
         public bool SurviveSceneChanges;
-        //Fade in
-        //Fade out
+        public List<string> Tags;
 
         public AudioSourceSettings                  AudioSourceSettings;
         public AudioChorusFilterSettings            AudioChorusFilterSettings;

@@ -5,10 +5,11 @@ using UnityEngine;
 namespace GBJ.AudioEngine
 {
     public class Audio
-    {   
+    {
         private static Dictionary<string, AudioEvent> audioEvents;
         private static GameObject _audioPlayerPrefab;
-        private static GameObject audioPlayerPrefab
+        private static readonly List<AudioPlayer> livingAudioPlayers = new List<AudioPlayer>();
+        private static GameObject AudioPlayerPrefab
         {
             get{
                 if(_audioPlayerPrefab == null)
@@ -30,7 +31,7 @@ namespace GBJ.AudioEngine
 
         public static AudioPlayer Play(AudioEvent audioEvent)
         {
-            GameObject instantiatedPrefab = GameObject.Instantiate(audioPlayerPrefab);
+            GameObject instantiatedPrefab = GameObject.Instantiate(AudioPlayerPrefab);
             instantiatedPrefab.hideFlags = HideFlags.DontSaveInEditor;
             AudioPlayer player = instantiatedPrefab.GetComponent<AudioPlayer>();
 
@@ -44,11 +45,12 @@ namespace GBJ.AudioEngine
             return player;
         }
 
+        public static List<AudioPlayer> GetLivingAudioPlayers() => livingAudioPlayers;
+        internal static void RegisterAudioPlayer(AudioPlayer audioPlayer) => livingAudioPlayers.Add(audioPlayer);
+        internal static void UnregisterAudioPlayer(AudioPlayer audioPlayer) => livingAudioPlayers.Remove(audioPlayer);
+        
         [RuntimeInitializeOnLoadMethod]
-        private static void OnRuntimeMethodLoad()
-        {
-            LoadEvents();
-        }
+        private static void OnRuntimeMethodLoad() => LoadEvents();
 
         private static void LoadEvents()
         {

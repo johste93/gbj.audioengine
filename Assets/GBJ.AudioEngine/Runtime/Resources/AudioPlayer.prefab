@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Source: {fileID: 4428752188643761408}
+  Tags: []
   ChorusFilter: {fileID: 0}
   DistortionFilter: {fileID: 0}
   EchoFilter: {fileID: 0}
