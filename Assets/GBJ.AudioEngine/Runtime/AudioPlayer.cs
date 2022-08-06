@@ -12,6 +12,7 @@ namespace GBJ.AudioEngine
 {
     public class AudioPlayer : MonoBehaviour
     {
+        public AudioEvent AudioEvent;
         public AudioSource Source;
         public List<string> Tags = new List<string>();
 
@@ -119,6 +120,8 @@ namespace GBJ.AudioEngine
 
         public void LoadAudioEvent(AudioEvent audioEvent)
         {
+            AudioEvent = audioEvent;
+            
             assetReference = audioEvent.GetAssetReferance();
 
             if(audioEvent.SurviveSceneChanges)
