@@ -30,7 +30,7 @@ Avoid hard coding audio settings: Music and sound effects settings are saved as 
 
 ### Group your audio events any way you like with custom tags:
 
-#### Tag your audio event:
+#### Tag your AudioEvent:
 
 <img src="DOC/fig3.png">
 
