@@ -672,13 +672,13 @@ namespace GBJ.AudioEngine
             if (referance.OperationHandle.IsValid())
             {
                 Addressables.ResourceManager.Acquire(referance.OperationHandle);
-                onLoaded.Invoke(referance.OperationHandle.Status == AsyncOperationStatus.Succeeded, (AudioClip) referance.OperationHandle.Result);
+                onLoaded.Invoke(referance.OperationHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded, (AudioClip) referance.OperationHandle.Result);
                 return;
             }
             
             referance.LoadAssetAsync<AudioClip>().Completed += handle => 
             {
-                onLoaded.Invoke(handle.Status == AsyncOperationStatus.Succeeded, handle.Result);
+                onLoaded.Invoke(handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded, handle.Result);
             };
 #endif
         }
