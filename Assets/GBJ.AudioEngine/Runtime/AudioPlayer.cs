@@ -13,7 +13,6 @@ namespace GBJ.AudioEngine
     public class AudioPlayer : MonoBehaviour
     {
         public AudioEvent AudioEvent;
-        public AudioSource Source;
         public List<string> Tags = new List<string>();
 
         [HideInInspector] public AudioChorusFilter ChorusFilter;
@@ -23,13 +22,22 @@ namespace GBJ.AudioEngine
         [HideInInspector] public AudioLowPassFilter LowPassFilter;
         [HideInInspector] public AudioReverbFilter ReverbFilter;
 
+        [SerializeField] private AudioSource Source;
+        
         private Coroutine playRoutine;
         private AssetReference assetReference;
         private AudioDelaySettings audioDelaySettings;
 
+        private float volume;
+
         private void Awake() => Audio.RegisterAudioPlayer(this);
 
-        private void OnDestroy() => Audio.UnregisterAudioPlayer(this);
+        private void OnDestroy()
+        {
+            Audio.UnregisterAudioPlayer(this);
+            UnsubscribeToVolumeEvents();
+            UnsubscribeToMuteEvent();
+        }
 
         public void Play()
         {
@@ -60,6 +68,16 @@ namespace GBJ.AudioEngine
             }
         }
 
+        public void Resume()
+        {
+            if (Source.isPlaying)
+                return;
+            
+            Source.Play();
+        }
+
+        public void Pause() => Source.Pause();
+
         public void Stop()
         {
             if(playRoutine != null)
@@ -69,6 +87,8 @@ namespace GBJ.AudioEngine
 
             Source.Stop();
         }
+
+        public bool IsPlaying() => Source.isPlaying;
 
         public void StopAndKill()
         {
@@ -126,6 +146,10 @@ namespace GBJ.AudioEngine
 
             if(audioEvent.SurviveSceneChanges)
                 SurviveSceneChanges();
+            
+            SubscribeToMuteEvent();
+
+            SetIgnoreVolumeEvents(audioEvent.IgnoreVolumeEvents);
 
             SetTags(audioEvent.Tags);
 
@@ -155,6 +179,7 @@ namespace GBJ.AudioEngine
             SetLoop(
                 Source.loop = audioEvent.AudioSourceSettings.Loop && Application.isPlaying
                 );
+            
             if(audioEvent.AudioSourceSettings.VolumeOverLifetimeType == AudioOverLifetimeType.Curve)
                 SetVolumeOverLifetime(
                     audioEvent.AudioSourceSettings.VolumeOverLifetime, 
@@ -299,16 +324,21 @@ namespace GBJ.AudioEngine
         }
         public AudioPlayer SetVolume(float constant)
         {
-            Source.volume = constant;
+            volume = constant;
+            Source.volume = Audio.IsMuted() ? 0 : volume * EvaluateVolume();
             return this;
         }
 
-        public AudioPlayer SetVolume(float min, float max)
-        {
-            Source.volume = Random.Range(min, max);
-            return this;
-        }
-        
+        public float GetVolume() => volume;
+        public bool HasClip() => Source.clip != null;
+
+        public float GetTime() => Source.time;
+        public float GetClipLength() => Source.clip.length;
+
+        public float GetPanStereo() => Source.panStereo;
+
+        public AudioPlayer SetVolume(float min, float max) => SetVolume( Random.Range(min, max) );
+
         public AudioPlayer SetVolumeOverLifetime(bool enabled, float fadeInPosition, float fadeOutPosition)
         {
             var effect = gameObject.GetComponent<VolumeOverLifetimeEffect>();
@@ -341,17 +371,15 @@ namespace GBJ.AudioEngine
             return this;
         }
 
+        public float GetPitch() => Source.pitch;
+
         public AudioPlayer SetPitch(float constant)
         {
             Source.pitch = constant;
             return this;
         }
         
-        public AudioPlayer SetPitch(float min, float max)
-        {
-            Source.pitch = Random.Range(min, max);
-            return this;
-        }
+        public AudioPlayer SetPitch(float min, float max) => SetPitch( Random.Range(min, max) );
 
         public AudioPlayer SetPitchOverLifetime(bool enabled, float fadeInPosition, float fadeOutPosition)
         {
@@ -602,6 +630,15 @@ namespace GBJ.AudioEngine
             return this;
         }
 
+        public AudioPlayer SetIgnoreVolumeEvents(bool ignoreVolumeEvents)
+        {
+            if(ignoreVolumeEvents)
+                UnsubscribeToVolumeEvents();
+            else
+                SubscribeToVolumeEvents();
+            return this;
+        }
+        
         public AudioPlayer SetTags(List<string> tags)
         {
             this.Tags = new List<string>(tags);
@@ -611,6 +648,7 @@ namespace GBJ.AudioEngine
         public AudioPlayer AddTag(string tag)
         {
             Tags.Add(tag);
+            Audio.AddTag(tag);
             return this;
         }
 
@@ -626,7 +664,7 @@ namespace GBJ.AudioEngine
                 assetReference.ReleaseAsset();
             
 #if UNITY_EDITOR
-            Unsubscribe();
+            UnsubscribeToAudioEventChange();
             
             if(Application.isPlaying)
                 Destroy(gameObject);
@@ -637,17 +675,59 @@ namespace GBJ.AudioEngine
 #endif
             Destroy(gameObject);
         }
+
+        private bool isSubscribedToVolumeEvents;
+        private void OnVolumeChangedEvent(string tag, float volume)
+        {
+            if (!(Tags.Contains(tag) || tag.Equals(Audio.MainVolumeTag)))
+                return;
+            
+            SetVolume(volume);
+        }
         
+        private float EvaluateVolume()
+        {
+            float volumeModifier = Audio.GetMainVolume();
+            foreach (var tag in Tags)
+                volumeModifier *= Audio.GetVolumeByTag(tag);
+            
+            return volumeModifier;
+        }
+        
+        private void SubscribeToVolumeEvents()
+        {
+            if (isSubscribedToVolumeEvents)
+                return;
+            
+            isSubscribedToVolumeEvents = true;
+            Audio.OnVolumeChangedEvent += OnVolumeChangedEvent;
+        }
+
+        private void UnsubscribeToVolumeEvents()
+        {
+            if (!isSubscribedToVolumeEvents)
+                return;
+            
+            isSubscribedToVolumeEvents = false;
+            Audio.OnVolumeChangedEvent -= OnVolumeChangedEvent;
+        }
+
+        private void OnMuteEvent(bool isMuted) => SetVolume(volume);
+
+        private void SubscribeToMuteEvent() => Audio.OnMuteEvent += OnMuteEvent;
+
+        private void UnsubscribeToMuteEvent() => Audio.OnMuteEvent -= OnMuteEvent;
+
 #if UNITY_EDITOR
         private AudioEvent subscribedToEvent;
-        public void Subscribe(AudioEvent audioEvent)
+        public void SubscribeToAudioEventChange(AudioEvent audioEvent)
         {
-            Unsubscribe();
+            UnsubscribeToAudioEventChange();
             subscribedToEvent = audioEvent;
             subscribedToEvent.OnEventChanged += OnEventChanged;
         }
 
-        public void Unsubscribe()
+        public void UnsubscribeToAudioEventChange()
         {
             if (subscribedToEvent == null)
                 return;

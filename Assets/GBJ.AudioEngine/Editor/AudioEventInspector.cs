@@ -101,6 +101,7 @@ namespace GBJ.AudioEngine.Editor
 
             audioEvent.PlayOrder = (PlayOrder)EditorGUILayout.EnumPopup("Play Order", audioEvent.PlayOrder);
             audioEvent.SurviveSceneChanges = EditorGUILayout.Toggle("Survive Scene Changes", audioEvent.SurviveSceneChanges);
+            audioEvent.IgnoreVolumeEvents = EditorGUILayout.Toggle(new GUIContent("Ignore Volume Events", "Enable this if you want to manually control the volume of this event"), audioEvent.IgnoreVolumeEvents);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("Tags"));
 
             EditorGUILayout.Space();

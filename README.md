@@ -18,6 +18,7 @@ Avoid hard coding audio settings: Music and sound effects settings are saved as 
 <img src="DOC/fig7.png">
 
 ### All built-in Unity filters supported and can be configured at runtime:
+
 <img src="DOC/fig6.png">
 
 
@@ -28,17 +29,25 @@ Avoid hard coding audio settings: Music and sound effects settings are saved as 
 <img src="DOC/fig5.png">
 
 
-### Group your audio events any way you like with custom tags:
+### Tag your AudioEvent and easily control volume and other settings for the entire group:
 
-#### Tag your AudioEvent:
+<img src="DOC/fig8.png">
 
-<img src="DOC/fig3.png">
-
-#### Example usage: Find all "Outdoor" Audio Players using LINQ:
+#### Example usage: Find all "Outdoor" Audio Players and change their pitch using LINQ:
 ```
-Audio.GetLivingAudioPlayers().Where(x => x.Tags.Contains("Outdoor")).ToList();
+Audio.GetLivingAudioPlayers().Where(x => x.Tags.Contains("Outdoor")).ToList().Foreach(audioPlayer => audioPlayer.SetPitch(1.25f));
 ```
 
+#### Adjust Volume of entire group:
+```
+Audio.SetVolumeByTag("Environment", 0.25f);
+```
+
+### Global Mute controls:
+```
+Audio.Mute();
+Audio.Unmute();
+```
 
 ### If you need to modify settings from code, AudioPlayer supports chainable method calling:
 ```

@@ -5,14 +5,14 @@ namespace GBJ.AudioEngine.Effects
     {
         protected override void OnStartedPlaying()
         {
-            peek = source.volume;
+            peek = audioPlayer.GetVolume();
         }
 
         protected override void Update()
         {
             base.Update();
             if(Curve != null)
-                source.volume = Curve.Evaluate(time) * peek;
+                audioPlayer.SetVolume(Curve.Evaluate(time) * peek);
         }
     }
 }

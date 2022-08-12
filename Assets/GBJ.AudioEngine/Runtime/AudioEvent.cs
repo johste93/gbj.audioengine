@@ -15,6 +15,7 @@ namespace GBJ.AudioEngine
         public PlayOrder PlayOrder;
         public bool SurviveSceneChanges;
         public List<string> Tags;
+        public bool IgnoreVolumeEvents;
 
         public AudioSourceSettings                  AudioSourceSettings;
         public AudioChorusFilterSettings            AudioChorusFilterSettings;

@@ -5,14 +5,14 @@ namespace GBJ.AudioEngine.Effects
     {
         protected override void OnStartedPlaying()
         {
-            peek = source.panStereo;
+            peek = audioPlayer.GetPanStereo();
         }
 
         protected override void Update()
         {
             base.Update();
-            if(Curve != null)
-                source.panStereo = Curve.Evaluate(time) * peek;
+            if (Curve != null)
+                audioPlayer.SetStereoPan(Curve.Evaluate(time) * peek, false, 0, 0);
         }
     }
 }
