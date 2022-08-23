@@ -9,6 +9,7 @@ namespace GBJ.AudioEngine
     {
         internal const string MainVolumeTag = "Main";
         private const int DefaultVolume = 1;
+        private static bool _initalized;
         private static bool _isMuted;
         private static Dictionary<string, float> _tagVolumes = new Dictionary<string, float>();
 
@@ -63,9 +64,13 @@ namespace GBJ.AudioEngine
         internal static void RegisterAudioPlayer(AudioPlayer audioPlayer) => livingAudioPlayers.Add(audioPlayer);
         internal static void UnregisterAudioPlayer(AudioPlayer audioPlayer) => livingAudioPlayers.Remove(audioPlayer);
 
-        [RuntimeInitializeOnLoadMethod]
-        private static void OnRuntimeMethodLoad()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void OnBeforeSceneLoadRuntimeMethod()
         {
+            if (_initalized)
+                return;
+
+            _initalized = true;
             LoadEvents();
             _tagVolumes = new Dictionary<string, float>() { {"Main", DefaultVolume} };
             foreach (var tag in audioEvents.SelectMany(x => x.Value.Tags))
