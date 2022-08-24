@@ -65,7 +65,9 @@ namespace GBJ.AudioEngine
         internal static void UnregisterAudioPlayer(AudioPlayer audioPlayer) => livingAudioPlayers.Remove(audioPlayer);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void OnBeforeSceneLoadRuntimeMethod()
+        private static void OnBeforeSceneLoadRuntimeMethod() => Initalize();
+
+        public static void Initalize()
         {
             if (_initalized)
                 return;

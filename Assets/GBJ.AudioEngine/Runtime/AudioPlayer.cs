@@ -24,7 +24,9 @@ namespace GBJ.AudioEngine
 
         [SerializeField] private AudioSource Source;
         
+#if UNITY_EDITOR
         private Coroutine playRoutine;
+#endif
         private AssetReference assetReference;
         private AudioDelaySettings audioDelaySettings;
 
@@ -52,19 +54,23 @@ namespace GBJ.AudioEngine
                     }
 
                     SetAudioClip(clip);
-                    
-                    if(Application.isPlaying)
-                        playRoutine = StartCoroutine(PlayRoutine());
+
+                    if (Application.isPlaying)
+                        PrepareToPlay();
+#if UNITY_EDITOR  
                     else
                         playRoutine = StartCoroutine(EditorPlayRoutine());
+#endif
                 });
             }
             else
             {
-                if(Application.isPlaying)
-                    playRoutine = StartCoroutine(PlayRoutine());
+                if (Application.isPlaying)
+                    PrepareToPlay();
+#if UNITY_EDITOR      
                 else
                     playRoutine = StartCoroutine(EditorPlayRoutine());
+#endif
             }
         }
 
@@ -80,11 +86,12 @@ namespace GBJ.AudioEngine
 
         public void Stop()
         {
+#if UNITY_EDITOR
             if(playRoutine != null)
                 StopCoroutine(playRoutine);
-
+            
             playRoutine = null;
-
+#endif
             Source.Stop();
         }
 
@@ -96,33 +103,68 @@ namespace GBJ.AudioEngine
             Destroy();
         }
 
-        private IEnumerator PlayRoutine()
-        {
-            float delay = 0;
+        private AudioPlayerState state;
+        private float delay;
 
+        private enum AudioPlayerState
+        {
+            Uninitialised,
+            WaitingForDelay,
+            ReadyToPlay,
+            IsPlaying,
+            DonePlaying
+        }
+
+
+        private void Update()
+        {
+            switch (state)
+            {
+                case AudioPlayerState.Uninitialised:
+                case AudioPlayerState.DonePlaying:
+                    return;
+                case AudioPlayerState.WaitingForDelay:
+                    if (delay > 0f)
+                    {
+                        delay -= Time.deltaTime;
+                        return;
+                    }
+
+                    state = AudioPlayerState.ReadyToPlay;
+                    return;
+                case AudioPlayerState.ReadyToPlay:
+                    StartPlaying();
+                    return;
+                case AudioPlayerState.IsPlaying:
+                    if (Source.loop || Source.isPlaying || Source.IsPaused())
+                        return;
+            
+                    Destroy();
+                    return;
+            }
+        }
+
+        private void PrepareToPlay()
+        {
             if(audioDelaySettings != null && audioDelaySettings.RandomDelay)
                 delay = Random.Range(audioDelaySettings.MinDelay, audioDelaySettings.MaxDelay);
             else
                 delay = audioDelaySettings.Delay;
-
-            if(delay > 0f)
-                yield return new WaitForSeconds(delay);
-            else
-                yield return new WaitForEndOfFrame();
-                
+            
+            state = AudioPlayerState.WaitingForDelay;
+        }
+        
+        private void StartPlaying()
+        {
             if(Source.clip == null)
                 UnityEngine.Debug.LogError("AudioClip is null!");
             else
                 Source.Play();
             
-            while (Source.loop || Source.isPlaying || Source.IsPaused())
-            {
-                yield return 0;
-            }
-            
-            Destroy();
+            state = AudioPlayerState.IsPlaying;
         }
 
+#if UNITY_EDITOR        
         private IEnumerator EditorPlayRoutine()
         {
             yield return new WaitForEndOfFrame();
@@ -137,6 +179,7 @@ namespace GBJ.AudioEngine
 
             Destroy();
         }
+#endif
 
         public void LoadAudioEvent(AudioEvent audioEvent)
         {
@@ -660,6 +703,8 @@ namespace GBJ.AudioEngine
 
         public void Destroy()
         {
+            state = AudioPlayerState.DonePlaying;
+            
             if(assetReference.IsValid() && assetReference.RuntimeKeyIsValid())
                 assetReference.ReleaseAsset();
             
@@ -670,10 +715,9 @@ namespace GBJ.AudioEngine
                 Destroy(gameObject);
             else
                 DestroyImmediate(gameObject);
-            
-            return;
-#endif
+#else
             Destroy(gameObject);
+#endif
         }
 
         private bool isSubscribedToVolumeEvents;

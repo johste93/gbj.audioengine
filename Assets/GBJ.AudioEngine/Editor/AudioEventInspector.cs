@@ -203,6 +203,8 @@ namespace GBJ.AudioEngine.Editor
             if(currentPlayer != null)
                 DestroyImmediate(currentPlayer.gameObject);
 
+            Audio.Initalize();
+
             currentPlayer = Audio.Play(audioEvent);
 
             System.Reflection.Assembly assembly = typeof(UnityEditor.EditorWindow).Assembly;
