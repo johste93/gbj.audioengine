@@ -128,10 +128,7 @@ namespace GBJ.AudioEngine
 
         public static float GetVolumeByTag(string tag)
         {
-            if (_tagVolumes.ContainsKey(tag))
-                return _tagVolumes[tag];
-
-            return DefaultVolume;
+            return _tagVolumes[tag];
         }
 
         public static void SetVolumeByTag(string tag, float value)
